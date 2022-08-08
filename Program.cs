@@ -5,7 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 
 
-namespace Unit_8._6
+namespace FinalTask
 {
     [Serializable]
     class Student
