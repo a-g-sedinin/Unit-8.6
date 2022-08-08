@@ -1,8 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
+
 
 namespace Unit_8._6
 {
+    [Serializable]
+    class Student
+    {
+        public string Name { get; set; }
+        public string Group { get; set; }
+        public DateTime DateOfBirth { get; set; }
+
+        public Student(string name, string group, DateTime bday)
+        {
+            Name = name;
+            Group = group;
+            DateOfBirth = bday;
+
+        }
+    }
     internal class Program
     {
         static void Main(string[] args)
@@ -38,6 +57,35 @@ namespace Unit_8._6
            
             
             return GetPath();
+        }
+        static string GetFile()
+        {
+            Console.WriteLine("Input correct path to file, please.");
+            string path = Console.ReadLine();
+            try
+            {
+                FileInfo fileInfo = new FileInfo(path);
+                if (fileInfo.Exists)
+                {
+                    path = fileInfo.FullName;
+                    return path;
+                }
+                else
+                {
+                    Console.Clear();
+                    Console.WriteLine("Path is incorrect.");
+
+                }
+            }
+
+
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+
+            return GetFile();
         }
         static void DeleteUnused(DirectoryInfo path)
         {
@@ -147,6 +195,21 @@ namespace Unit_8._6
         {
             Console.Clear();
             Console.WriteLine("Task #4 has been choosen.");
+            BinaryFormatter formatter = new BinaryFormatter();
+            using FileStream fs = new FileStream("D://Students.dat", FileMode.OpenOrCreate);
+            {
+                try
+                {
+                    var st = formatter.Deserialize(fs);
+                    Console.ReadKey();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+
+
         }
         static void ChooseTask()
         {
