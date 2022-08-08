@@ -39,68 +39,109 @@ namespace Unit_8._6
             
             return GetPath();
         }
+        static void DeleteUnused(DirectoryInfo path)
+        {
+            DirectoryInfo[] dirs = path.GetDirectories();
+            Console.WriteLine($"\n--->>> Directories <<<---\n Total directories in root: {dirs.Length}");
+            foreach (DirectoryInfo dir in dirs)
+            {
 
+
+                if (DateTime.Now - dir.LastAccessTime >= TimeSpan.FromMinutes(30))
+                {
+
+                    try
+                    {
+                        dir.Delete(true);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }
+            }
+            FileInfo[] files = path.GetFiles();
+            Console.WriteLine($"\n--->>> Files <<<---\n Total files in root: {files.Length}");
+            foreach (FileInfo file in files)
+            {
+                if (DateTime.Now - file.LastAccessTime >= TimeSpan.FromMinutes(30))
+                {
+
+                    try
+                    {
+                        file.Delete();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+
+                }
+            }
+        }
+        static long CalcSpace(DirectoryInfo path)
+        {
+            long space = 0;
+            FileInfo[] files = path.GetFiles();
+            
+            foreach (FileInfo file in files)
+            {
+                try
+                {
+                 space += file.Length;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            DirectoryInfo[] dirs = path.GetDirectories();
+
+            foreach (DirectoryInfo dir in dirs)
+            {
+                try
+                {
+                    space += CalcSpace(dir);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+         return space;
+        }
         static void Task1()
         { 
             Console.Clear();
             Console.WriteLine("Task #1 has been choosen.");
-            string path = GetPath();
-            string[] dirs = Directory.GetDirectories(path);
-            Console.WriteLine($"\n--->>> Directories <<<---\n Total directories {dirs.Length}");
-            foreach (string dir in dirs)
-            {
-
-
-                if (   DateTime.Now - Directory.GetLastAccessTime(dir) >= TimeSpan.FromMinutes(30)         )
-                {
-                    
-                    try
-                    {
-                        DirectoryInfo dirInfo = new DirectoryInfo(dir);
-                        dirInfo.Delete(true);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-                }
-            }
-            string[] files = Directory.GetFiles(path);
-            Console.WriteLine($"\n--->>> Files <<<---\n Total files {files.Length}");
-            foreach (string file in files)
-            {
-                if (DateTime.Now - File.GetLastAccessTime(file) >= TimeSpan.FromMinutes(30))
-                {
-                    
-                    try
-                    {
-                        FileInfo fileInfo = new FileInfo(file);
-                        fileInfo.Delete();
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
-
-                }
-            }
-
-        Console.ReadLine();
+            DirectoryInfo path = new DirectoryInfo(GetPath());
+            DeleteUnused(path);
+            Console.ReadKey();
         }
         static void Task2()
         {
             Console.Clear();
             Console.WriteLine("Task #2 has been choosen.");
-            string path = GetPath();
-
-
-
+            DirectoryInfo path = new DirectoryInfo( GetPath());
+            
+            
+            Console.WriteLine($"Directory size = {CalcSpace(path)} byte(s)");
+            Console.ReadKey();
 
         }
         static void Task3()
         {
             Console.Clear();
             Console.WriteLine("Task #3 has been choosen.");
+            DirectoryInfo path = new DirectoryInfo(GetPath());
+            long initialSpace = CalcSpace(path);
+            DeleteUnused(path);
+            long currentSpace = CalcSpace(path);
+            long deletedSpace = initialSpace - currentSpace;
+            Console.WriteLine($"\n Initial size was: {initialSpace} byte(s) \n Byte(s) deleted: {deletedSpace} \n Current space is: {currentSpace} byte(s) ");
+            Console.ReadKey();
+
+
         }
         static void Task4()
         {
@@ -128,7 +169,7 @@ namespace Unit_8._6
                     Task3();
                     break;
                 case "4":
-                    Task3();
+                    Task4();
                     break;
                 default:
 
